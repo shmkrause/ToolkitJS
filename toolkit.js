@@ -613,7 +613,7 @@ var toolkit = {
             __pageNumberDisplay : function(lastPage){
                 var nav = '<ul id="'+this.options.id+'-nav" class="gridview-nav">';
                 //list out page numbers according to number of rows and pagination size
-                for(var i=1; i<lastPage; i++) {
+                for(var i=1; i<=lastPage; i++) {
                     nav += '<li ' + (i === this.currPage ? ' class="selected"' : '')
                         + ' onclick="toolkit.cache[\''+this.options.id+'\'].goTo(toolkit.$(this), '+i+')">'
                         + i + '</li>';
@@ -644,6 +644,7 @@ var toolkit = {
                 toolkit.$('#'+this.options.id+' tr:has(td)').remove();
                 toolkit.$('#'+this.options.id).append(tbody);
 
+                console.log();
                 if(this.currPage === Math.ceil(this.data.length/this.options.pageSize)) {
                     next.addClass('disabled');
                 } else next.removeClass('disabled');
@@ -669,7 +670,7 @@ var toolkit = {
                 if(caller.hasClass('disabled') || this.currPage === 1) return;
 
                 //Get previous page
-                this.curPage--;
+                this.currPage--;
                 this.updatePage();
 
                 //update current page indicator
