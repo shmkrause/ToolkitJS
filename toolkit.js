@@ -4,7 +4,7 @@
  *      jQuery
  */
 var toolkit = {
-    $               :   jQuery.noConflict(),
+    $               :   jQuery,
     cache           :   {},
     /**
      * Checks the browser cookies for instance of name
@@ -116,6 +116,10 @@ var toolkit = {
     isNull          :       function(obj){
         return Object.prototype.toString.call(obj) === '[object Null]';
     },
+    
+    isPrintable     :       function(obj){
+        return toolkit.getPrototype(obj) === '[object String]' || toolkit.getPrototype(obj) === '[object Number]';
+    },
 
     getPrototype    :       function(obj){
         return Object.prototype.toString.call(obj);
@@ -165,6 +169,9 @@ var toolkit = {
 
         var r = false;
         for(var prop in haystack) {
+            if(!isKey && !toolkit.isPrintable(haystack[prop])) continue;
+            if(!toolkit.isPrintable(needle)) continue;
+            
             if(!caseSensitive) {
                 var search = exact ? "^" + needle + "$" : needle,
                     regex = new RegExp(search, "i");
@@ -213,7 +220,7 @@ var toolkit = {
 
     validateDataType:   function(param, type, nullable){
         this.error = [],
-            this.outcome = true;
+        this.outcome = true;
 
         //Verify param data type is supported
         if(typeof param === 'undefined' && typeof param !== 'string' && !toolkit.isArray(param)) {
@@ -511,6 +518,8 @@ var toolkit = {
                     if(additionalCols.hasOwnProperty(++colCount -1)) {
                         //Insert user-defined cols
                         do {
+                            if(!toolkit.isPrintable(additionalCols[colCount-1]['label'])) continue;
+                            
                             var style = additionalCols[colCount-1].hasOwnProperty('style') ?
                                 ' style="'+additionalCols[colCount-1]['style']+'"' : '';
 
@@ -519,7 +528,7 @@ var toolkit = {
                         } while(additionalCols.hasOwnProperty(++colCount -1));
                     }
 
-                    if(toolkit.contains(this.cols[i], this.options.blackList)) continue;
+                    if(toolkit.contains(this.cols[i], this.options.blackList) || !toolkit.isPrintable(this.cols[i])) continue;
 
                     html += '<th onclick="toolkit.cache[\''+this.options.id+'\'].doSort(toolkit.$(this))">'
                         + this.cols[i] + '</th>';
@@ -530,6 +539,7 @@ var toolkit = {
                     colCount = html.match(/<th/g).length;
                     for(var i in additionalCols) {
                         if(parseInt(i) <= colCount || !additionalCols[i].hasOwnProperty('label')) continue;
+                        if(!toolkit.isPrintable(additionalCols[i]['label'])) continue;
 
                         var style = additionalCols[i].hasOwnProperty('style') ?
                             ' style="'+additionalCols[i]['style']+'"' : '';
@@ -537,7 +547,7 @@ var toolkit = {
                         html += '<th' + style + '>' + additionalCols[i]['label'] + '</th>';
                     }
                 }
-
+                
                 html += '</tr>' + this.getTableBody() + '</table>';
 
                 //Pagination
@@ -565,7 +575,7 @@ var toolkit = {
                 for(var rows=start; rows<=end; rows++) {
                     colCount = 0;
                     var row_id = toolkit.contains("id", this.data[rows], true, true);
-
+                    
                     html += '<tr' + (row_id ? ' data-id="' + row_id + '"' : "") + '>';
 
                     //execute replace on templated content (user-defined cols)
@@ -592,10 +602,10 @@ var toolkit = {
                                 html += '<td>' + tmp[colCount-1] + '</td>';
                             } while(additionalCols.hasOwnProperty(++colCount -1));
                         }
-
+                        
                         if(toolkit.contains(cols, this.options.blackList)) continue;
 
-                        html += '<td>'+this.data[rows][cols]+'</td>';
+                            html += '<td>'+this.data[rows][cols]+'</td>';
                     }
 
                     if(colCount <= cSize+toolkit.sizeOf(this.data[0])) {
@@ -609,7 +619,7 @@ var toolkit = {
                 }
                 return html;
             },
-
+            
             __pageNumberDisplay : function(lastPage){
                 var nav = '<ul id="'+this.options.id+'-nav" class="gridview-nav">';
                 //list out page numbers according to number of rows and pagination size
@@ -618,7 +628,7 @@ var toolkit = {
                         + ' onclick="toolkit.cache[\''+this.options.id+'\'].goTo(toolkit.$(this), '+i+')">'
                         + i + '</li>';
                 }
-                return nav+'</ul>';
+              return nav+'</ul>';  
             },
 
             getNav          :   function(){
@@ -644,7 +654,6 @@ var toolkit = {
                 toolkit.$('#'+this.options.id+' tr:has(td)').remove();
                 toolkit.$('#'+this.options.id).append(tbody);
 
-                console.log();
                 if(this.currPage === Math.ceil(this.data.length/this.options.pageSize)) {
                     next.addClass('disabled');
                 } else next.removeClass('disabled');
@@ -717,7 +726,7 @@ var toolkit = {
 
         return gv;
     },
-
+    
     uniqueObjectListVal :   function(propName, list) {
         var values = {},
             emptyString = false;
@@ -727,10 +736,10 @@ var toolkit = {
         }
         values = Object.keys(values);
         if(emptyString) values.push("");
-
+        
         return values;
     },
-
+    
     uniqueListVal       :   function(list) {
         var values = {},
             emptyString = false;
@@ -740,12 +749,8 @@ var toolkit = {
         }
         values = Object.keys(values);
         if(emptyString) values.push("");
-
+        
         return values;
-    },
-
-    parseDate           :   function(dateString) {
-        if(typeof dateString === "string") dateString = dateString.replace(/-/g, "/").replace(/,/g, "");
-        return new Date(Date.parse(dateString));
     }
 };
+if(toolkit.querystring('noConflict')) toolkit.$ = jQuery.noConflict();
