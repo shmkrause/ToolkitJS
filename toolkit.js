@@ -751,6 +751,14 @@ var toolkit = {
         if(emptyString) values.push("");
         
         return values;
+    },
+
+    keys                : function(obj){
+        var k = [];
+        for(var i in obj){
+            k.push(i);
+        }
+        return k;
     }
 };
 if(toolkit.querystring('noConflict')) toolkit.$ = jQuery.noConflict();

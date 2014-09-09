@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="../toolkit.js"></script>
+        <script src="gv_data.js"></script>
+    </head>
+    <body>
+        <h2>Gridview test</h2>
+        <div id="gridview"></div>
+        
+        <script>
+            var $ = toolkit.$;
+            $(document).ready(function(){
+                var gv = new toolkit.gridview(data, {isPaginated: true, cols: "Name, PlayerNumber", sortCol: "PlayerNumber", blackList: ['ID'], class: "table table-striped", pageSize: 15});
+		if(gv) {
+			gv.createGridview("#gridview", true);
+		}
+            });
+            
+        </script>
+    </body>
+</html>
